@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"C:/Users/26940/Desktop/STM 32/工具软件/keil-assistant-master/release/keil-cli.exe\" rebuild --project \"D:/STM32Project/智慧农业大棚/STM32/Project.uvprojx\" --target \"Target 1\")",
+      "Bash(python:*)",
+      "Bash(pip install:*)"
+    ]
+  }
+}

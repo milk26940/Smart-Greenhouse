@@ -1,0 +1,119 @@
+# ============================================
+# STM32 + Keil uVision + CubeMX GitIgnore
+# ============================================
+
+# --------------------
+# Keil uVision 生成的文件
+# --------------------
+# 编译输出
+Objects/
+Listings/
+*.o
+*.obj
+*.lst
+*.map
+*.hex
+*.bin
+*.axf
+*.elf
+*.sct
+*.dep
+
+# Keil 项目临时文件
+*.uvgui.*
+*.uvoptx
+*.uvopt
+*.uvgui_*
+*.uvmpw
+*.uv2
+*.uvprojx.bak
+*.uvoptx.bak
+
+# Keil 调试文件
+*.dbgconf
+*.uvguix.*
+*.build_log.htm
+*.cspy.ps1
+*.pbi
+*.pbi.cout
+*.pbi.xcl
+*.cout
+*.xcl
+*.browse
+*.scvd
+
+# --------------------
+# STM32CubeMX 生成的文件
+# --------------------
+.mxproject
+*.tmp
+*.tmp_project
+
+# --------------------
+# 编译器生成的文件
+# --------------------
+# ARM Compiler
+*.crf
+*.d
+*.o
+*.i
+*.s
+*.htm
+*.lnp
+*.plg
+*.tra
+*.dep
+*.bak
+
+# GCC
+*.su
+*.mk
+makefile
+
+# --------------------
+# 编辑器/IDE
+# --------------------
+# VS Code
+.vscode/
+*.code-workspace
+
+# MDK-ARM
+RTE/
+*.lst
+*.map
+
+# CLion
+.idea/
+cmake-build-*/
+
+# --------------------
+# 系统文件
+# --------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --------------------
+# 日志和临时文件
+# --------------------
+*.log
+*.tmp
+tmp/
+temp/
+
+# --------------------
+# 输出文件夹
+# --------------------
+Debug/
+Release/
+build/
+Build/
+Output/
+out/
+dist/
+
+# --------------------
+# 固件二进制文件（可选，根据需要保留或删除）
+# --------------------
+# *.hex
+# *.bin
