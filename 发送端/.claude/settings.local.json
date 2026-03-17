@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "mcp__exa__web_search_exa"
+    ]
+  }
+}
