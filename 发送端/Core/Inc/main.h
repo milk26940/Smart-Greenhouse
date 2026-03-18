@@ -79,8 +79,8 @@ void Error_Handler(void);
 #define CO2_USART_TX_GPIO_Port GPIOB
 #define CO2_USART_RX_Pin GPIO_PIN_11
 #define CO2_USART_RX_GPIO_Port GPIOB
-#define DHT11_DATA_Pin GPIO_PIN_12
-#define DHT11_DATA_GPIO_Port GPIOB
+#define DHT11_DATA_Pin GPIO_PIN_14
+#define DHT11_DATA_GPIO_Port GPIOF
 #define LORA_AUX_Pin GPIO_PIN_13
 #define LORA_AUX_GPIO_Port GPIOC
 #define LED3_Pin GPIO_PIN_8

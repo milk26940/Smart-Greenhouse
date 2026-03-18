@@ -13,6 +13,7 @@
 #include "lora_downlink_framer.h"
 #include "queue.h"
 #include "task.h"
+#include "app_node_role.h"
 #include "lora_protocol.h"
 #include "sensor_service.h"
 #include "usart.h"
@@ -175,17 +176,45 @@ uint8_t Serial_WaitDownlinkCommand(LoraMotorCommand *command, uint32_t wait_ms)
   return 0U;
 }
 
-uint8_t Serial_SendUplinkFrame(const SensorData *sensor, const MotorStatus *motor)
+uint8_t Serial_SendEnvironmentFrame(const SensorData *sensor)
 {
   char payload[96];
   int payload_length;
 
-  if ((sensor == NULL) || (motor == NULL))
+  if (sensor == NULL)
   {
     return 0U;
   }
 
-  payload_length = LoraProtocol_BuildUplinkFrame(payload, sizeof(payload), sensor, motor);
+  payload_length = LoraProtocol_BuildEnvironmentFrame(payload,
+                                                      sizeof(payload),
+                                                      APP_NODE_ID,
+                                                      sensor);
+  if (payload_length <= 0)
+  {
+    Serial_Printf("UPLINK:ERR\r\n");
+    return 0U;
+  }
+
+  lora_send_bytes((const uint8_t *)payload, (uint16_t)payload_length, 0U);
+  lora_wait_idle(1000U);
+  return 1U;
+}
+
+uint8_t Serial_SendStatusFrame(const ActuatorStatus *status)
+{
+  char payload[96];
+  int payload_length;
+
+  if (status == NULL)
+  {
+    return 0U;
+  }
+
+  payload_length = LoraProtocol_BuildStatusFrame(payload,
+                                                 sizeof(payload),
+                                                 APP_NODE_ID,
+                                                 status);
   if (payload_length <= 0)
   {
     Serial_Printf("UPLINK:ERR\r\n");

@@ -7,18 +7,31 @@
 #include "queue.h"
 #include "usart.h"
 
-static SensorData last_sensor_data = {250, 600, 0, 400};
+static SensorData last_sensor_data = {250, 600, 350, 0, 400};
 static uint8_t co2_rx_byte = 0;
 static QueueHandle_t co2_rx_queue = NULL;
 static Co2UartParser co2_parser;
 
 static void sensor_delay_us(uint32_t us)
 {
-  uint32_t count = (SystemCoreClock / 8000000U) * us;
+  uint32_t start = SysTick->VAL;
+  uint32_t ticks = us * (SystemCoreClock / 1000000U);
+  uint32_t elapsed = 0U;
 
-  while (count-- != 0U)
+  while (elapsed < ticks)
   {
-    __NOP();
+    uint32_t current = SysTick->VAL;
+
+    if (current <= start)
+    {
+      elapsed += start - current;
+    }
+    else
+    {
+      elapsed += start + (SysTick->LOAD - current);
+    }
+
+    start = current;
   }
 }
 
@@ -27,9 +40,9 @@ static void dht11_set_output(uint8_t high_level)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   GPIO_InitStruct.Pin = DHT11_DATA_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(DHT11_DATA_GPIO_Port, &GPIO_InitStruct);
   HAL_GPIO_WritePin(DHT11_DATA_GPIO_Port,
                     DHT11_DATA_Pin,
@@ -69,39 +82,39 @@ static uint8_t dht11_read(SensorData *sensor)
   dht11_set_output(0U);
   HAL_Delay(20);
   dht11_set_output(1U);
-  sensor_delay_us(30);
   dht11_set_input();
+  sensor_delay_us(30);
 
-  if (!dht11_wait_for_level(GPIO_PIN_RESET, 100U))
+  if (HAL_GPIO_ReadPin(DHT11_DATA_GPIO_Port, DHT11_DATA_Pin) != GPIO_PIN_RESET)
   {
     return 0U;
   }
-  if (!dht11_wait_for_level(GPIO_PIN_SET, 100U))
+
+  while (HAL_GPIO_ReadPin(DHT11_DATA_GPIO_Port, DHT11_DATA_Pin) == GPIO_PIN_RESET)
   {
-    return 0U;
   }
-  if (!dht11_wait_for_level(GPIO_PIN_RESET, 100U))
+  while (HAL_GPIO_ReadPin(DHT11_DATA_GPIO_Port, DHT11_DATA_Pin) == GPIO_PIN_SET)
   {
-    return 0U;
   }
 
   for (byte_index = 0U; byte_index < 5U; ++byte_index)
   {
     for (bit_index = 0U; bit_index < 8U; ++bit_index)
     {
-      if (!dht11_wait_for_level(GPIO_PIN_SET, 70U))
+      bytes[byte_index] <<= 1;
+
+      if (!dht11_wait_for_level(GPIO_PIN_SET, 100U))
       {
         return 0U;
       }
 
-      sensor_delay_us(40);
-      bytes[byte_index] <<= 1;
+      sensor_delay_us(28);
       if (HAL_GPIO_ReadPin(DHT11_DATA_GPIO_Port, DHT11_DATA_Pin) == GPIO_PIN_SET)
       {
         bytes[byte_index] |= 0x01U;
       }
 
-      if (!dht11_wait_for_level(GPIO_PIN_RESET, 70U))
+      if (!dht11_wait_for_level(GPIO_PIN_RESET, 100U))
       {
         return 0U;
       }
@@ -164,12 +177,6 @@ void SensorService_Init(void)
 void SensorService_Process(void)
 {
   co2_drain_queue();
-}
-
-SensorData SensorService_Read(void)
-{
-  SensorService_Sample(&last_sensor_data);
-  return last_sensor_data;
 }
 
 void SensorService_Sample(SensorData *out)

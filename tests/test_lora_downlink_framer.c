@@ -73,6 +73,29 @@ static void test_parser_ignores_non_control_frames(void)
   expect_true(result == 0 || result == -1, "non-control frame should not produce a command");
 }
 
+static void test_parser_does_not_misread_uplink_frames(void)
+{
+  const char *frames[] = {
+      "ENV,N=1,T=25.3,H=60.1,SOIL=41.2,L=1234\r\n",
+      "STAT,N=2,F=ON,P=OFF,LED=ON\r\n",
+  };
+  LoraDownlinkFramer framer;
+  LoraMotorCommand command;
+  size_t frame_index;
+
+  LoraDownlinkFramer_Init(&framer);
+  for (frame_index = 0; frame_index < (sizeof(frames) / sizeof(frames[0])); ++frame_index)
+  {
+    size_t i;
+
+    for (i = 0; frames[frame_index][i] != '\0'; ++i)
+    {
+      int result = LoraDownlinkFramer_PushByte(&framer, (uint8_t)frames[frame_index][i], &command);
+      expect_true(result == 0, "uplink frame bytes should never produce a parsed command");
+    }
+  }
+}
+
 static void test_parser_resets_after_overflow(void)
 {
   LoraDownlinkFramer framer;
@@ -96,6 +119,7 @@ int main(void)
   test_parser_waits_for_line_ending();
   test_parser_emits_valid_command_after_newline();
   test_parser_ignores_non_control_frames();
+  test_parser_does_not_misread_uplink_frames();
   test_parser_resets_after_overflow();
 
   if (tests_failed != 0)

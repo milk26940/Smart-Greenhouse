@@ -6,7 +6,6 @@
 
 void SensorService_Init(void);
 void SensorService_Process(void);
-SensorData SensorService_Read(void);
 void SensorService_Sample(SensorData *out);
 SensorData SensorService_ReadLatest(void);
 void SensorService_OnUart3RxCplt(UART_HandleTypeDef *huart);

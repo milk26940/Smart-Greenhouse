@@ -4,6 +4,7 @@
 #include "queue.h"
 #include "semphr.h"
 #include "task.h"
+#include "app_node_role.h"
 #include "main.h"
 #include "Serial.h"
 #include "motor_service.h"
@@ -12,8 +13,8 @@
 static QueueHandle_t motor_cmd_queue = NULL;
 static SemaphoreHandle_t sensor_mutex = NULL;
 static SemaphoreHandle_t motor_mutex = NULL;
-static SensorData shared_sensor_data = {250, 600, 0, 400};
-static MotorStatus shared_motor_status = {0U, 0U};
+static SensorData shared_sensor_data = {250, 600, 350, 0, 400};
+static ActuatorStatus shared_actuator_status = {0U, 0U, 0U};
 
 static void app_fault_halt(const char *reason)
 {
@@ -34,12 +35,12 @@ static SensorData app_read_sensor_snapshot(void)
   return snapshot;
 }
 
-static MotorStatus app_read_motor_snapshot(void)
+static ActuatorStatus app_read_actuator_snapshot(void)
 {
-  MotorStatus snapshot;
+  ActuatorStatus snapshot;
 
   xSemaphoreTake(motor_mutex, portMAX_DELAY);
-  snapshot = shared_motor_status;
+  snapshot = shared_actuator_status;
   xSemaphoreGive(motor_mutex);
   return snapshot;
 }
@@ -72,7 +73,7 @@ static void motor_task(void *argument)
   MotorService_Init();
 
   xSemaphoreTake(motor_mutex, portMAX_DELAY);
-  shared_motor_status = MotorService_GetStatus();
+  shared_actuator_status = MotorService_GetStatus();
   xSemaphoreGive(motor_mutex);
 
   for (;;)
@@ -82,7 +83,7 @@ static void motor_task(void *argument)
       MotorService_ApplyCommand(&command);
 
       xSemaphoreTake(motor_mutex, portMAX_DELAY);
-      shared_motor_status = MotorService_GetStatus();
+      shared_actuator_status = MotorService_GetStatus();
       xSemaphoreGive(motor_mutex);
     }
   }
@@ -91,7 +92,9 @@ static void motor_task(void *argument)
 static void lora_task(void *argument)
 {
   TickType_t next_uplink_tick;
+#if (APP_NODE_ROLE == APP_NODE_ROLE_EXECUTOR) && (APP_NODE_DOWNLINK_COMPAT != 0U)
   LoraMotorCommand command;
+#endif
 
   (void)argument;
   Serial_Init();
@@ -102,17 +105,29 @@ static void lora_task(void *argument)
   {
     if ((int32_t)(xTaskGetTickCount() - next_uplink_tick) >= 0)
     {
-      SensorData sensor_snapshot = app_read_sensor_snapshot();
-      MotorStatus motor_snapshot = app_read_motor_snapshot();
+      if (APP_NODE_ROLE == APP_NODE_ROLE_SENSOR)
+      {
+        SensorData sensor_snapshot = app_read_sensor_snapshot();
 
-      (void)Serial_SendUplinkFrame(&sensor_snapshot, &motor_snapshot);
+        (void)Serial_SendEnvironmentFrame(&sensor_snapshot);
+      }
+      else
+      {
+        ActuatorStatus actuator_snapshot = app_read_actuator_snapshot();
+
+        (void)Serial_SendStatusFrame(&actuator_snapshot);
+      }
       next_uplink_tick = xTaskGetTickCount() + pdMS_TO_TICKS(5000U);
     }
 
+#if (APP_NODE_ROLE == APP_NODE_ROLE_EXECUTOR) && (APP_NODE_DOWNLINK_COMPAT != 0U)
     if (Serial_WaitDownlinkCommand(&command, 100U) != 0U)
     {
       (void)xQueueSend(motor_cmd_queue, &command, 0U);
     }
+#else
+    vTaskDelay(pdMS_TO_TICKS(100U));
+#endif
   }
 }
 
@@ -127,8 +142,14 @@ void freertos_start(void)
     return;
   }
 
-  xTaskCreate(sensor_task, "sensor", 256U, NULL, 2U, NULL);
-  xTaskCreate(motor_task, "motor", 256U, NULL, 3U, NULL);
+  if (APP_NODE_ROLE == APP_NODE_ROLE_SENSOR)
+  {
+    xTaskCreate(sensor_task, "sensor", 256U, NULL, 2U, NULL);
+  }
+  else
+  {
+    xTaskCreate(motor_task, "motor", 256U, NULL, 3U, NULL);
+  }
   xTaskCreate(lora_task, "lora", 384U, NULL, 2U, NULL);
   vTaskStartScheduler();
 }

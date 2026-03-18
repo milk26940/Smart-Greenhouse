@@ -5,6 +5,6 @@
 
 void MotorService_Init(void);
 void MotorService_ApplyCommand(const LoraMotorCommand *command);
-MotorStatus MotorService_GetStatus(void);
+ActuatorStatus MotorService_GetStatus(void);
 
 #endif
