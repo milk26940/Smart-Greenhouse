@@ -1,4 +1,4 @@
-/*
+Ôªø/*
  * FreeRTOS V202212.01
  * Copyright (C) 2020 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
@@ -51,6 +51,9 @@
 #define configUSE_TRACE_FACILITY	0
 #define configUSE_16_BIT_TICKS		0
 #define configIDLE_SHOULD_YIELD		1
+#define configUSE_MUTEXES            1
+#define configCHECK_FOR_STACK_OVERFLOW 2
+#define configUSE_MALLOC_FAILED_HOOK  1
 
 
 /* Set the following definitions to 1 to include the API function, or zero
@@ -78,11 +81,13 @@ configKERNEL_INTERRUPT_PRIORITY setting.  Here 15 corresponds to the lowest
 NVIC value of 255. */
 #define configLIBRARY_KERNEL_INTERRUPT_PRIORITY	15
 
-/* ÃÌº”±ÿ–Îµƒ»˝∏ˆ∫Í */
+/* Ê∑ªÂä†ÂøÖÈ°ªÁöÑ‰∏â‰∏™ÂÆè */
 #define xPortPendSVHandler  PendSV_Handler
 #define vPortSVCHandler     SVC_Handler
 #define INCLUDE_xTaskGetSchedulerState   1
 
 
 #endif /* FREERTOS_CONFIG_H */
+
+
 

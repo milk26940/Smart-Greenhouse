@@ -8,10 +8,12 @@
 /* USER CODE END Header */
 #include "main.h"
 #include "gpio.h"
+#include "adc.h"
+#include "tim.h"
 #include "usart.h"
 
 #include "OLED.h"
-#include "Serial.h"
+#include "freertos_demo.h"
 
 void SystemClock_Config(void);
 
@@ -22,15 +24,17 @@ int main(void)
 
   OLED_Init();
   MX_GPIO_Init();
+  MX_ADC1_Init();
+  MX_TIM3_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
+  MX_USART3_UART_Init();
 
   OLED_ShowString(1, 1, "LoRa TX");
-  Serial_Init();
+  freertos_start();
 
   while (1)
   {
-    Serial_Process();
   }
 }
 

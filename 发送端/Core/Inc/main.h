@@ -69,10 +69,24 @@ void Error_Handler(void);
 #define LED1_GPIO_Port GPIOA
 #define LED2_Pin GPIO_PIN_1
 #define LED2_GPIO_Port GPIOA
+#define MOTOR_PWM_Pin GPIO_PIN_0
+#define MOTOR_PWM_GPIO_Port GPIOB
+#define MOTOR_EN_Pin GPIO_PIN_1
+#define MOTOR_EN_GPIO_Port GPIOB
+#define MOTOR_DIR_Pin GPIO_PIN_5
+#define MOTOR_DIR_GPIO_Port GPIOB
+#define CO2_USART_TX_Pin GPIO_PIN_10
+#define CO2_USART_TX_GPIO_Port GPIOB
+#define CO2_USART_RX_Pin GPIO_PIN_11
+#define CO2_USART_RX_GPIO_Port GPIOB
+#define DHT11_DATA_Pin GPIO_PIN_12
+#define DHT11_DATA_GPIO_Port GPIOB
 #define LORA_AUX_Pin GPIO_PIN_13
 #define LORA_AUX_GPIO_Port GPIOC
 #define LED3_Pin GPIO_PIN_8
 #define LED3_GPIO_Port GPIOA
+#define LIGHT_ADC_Pin GPIO_PIN_0
+#define LIGHT_ADC_GPIO_Port GPIOC
 
 /* USER CODE BEGIN Private defines */
 

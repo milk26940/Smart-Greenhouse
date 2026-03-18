@@ -59,6 +59,7 @@ extern void xPortSysTickHandler(void);
 /* External variables --------------------------------------------------------*/
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
+extern UART_HandleTypeDef huart3;
 extern TIM_HandleTypeDef htim7;
 
 /* USER CODE BEGIN EV */
@@ -224,6 +225,11 @@ void USART1_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
   HAL_UART_IRQHandler(&huart2);
+}
+
+void USART3_IRQHandler(void)
+{
+  HAL_UART_IRQHandler(&huart3);
 }
 
 /**
