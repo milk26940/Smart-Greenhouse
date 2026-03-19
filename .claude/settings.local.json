@@ -2,7 +2,15 @@
   "permissions": {
     "allow": [
       "Bash(find:*)",
-      "Bash(ssh:*)"
+      "Bash(ssh:*)",
+      "WebFetch(domain:minimax-algeng-chat-tts.oss-cn-wulanchabu.aliyuncs.com)",
+      "Bash(smithery mcp:*)",
+      "Bash(mysql:*)",
+      "Bash(./mvnw test:*)",
+      "Bash(npm run:*)",
+      "Bash(node:*)",
+      "Bash(./mvnw package:*)",
+      "Bash(ls:*)"
     ]
   }
 }

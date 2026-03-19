@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir /a)",
+      "Bash(git:*)",
+      "Bash(xargs grep:*)",
+      "Bash(find D:/STM32Project/智慧农业大棚/网页 -not -path */node_modules/* -name *.vue -o -name *.html -o -name *.js)",
+      "Bash(npm install:*)"
+    ]
+  }
+}
