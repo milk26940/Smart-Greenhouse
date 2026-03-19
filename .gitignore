@@ -69,6 +69,7 @@ Listings/
 *.su
 *.mk
 makefile
+!Makefile
 
 # --------------------
 # 编辑器/IDE
@@ -100,6 +101,8 @@ desktop.ini
 *.tmp
 tmp/
 temp/
+__pycache__/
+*.pyc
 
 # --------------------
 # 输出文件夹

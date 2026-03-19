@@ -28,7 +28,7 @@
 
 ## NFS 挂载
 
-- 当前已打通的 NFS 链路为：虚拟机 `192.168.137.3` -> 开发板 `192.168.137.155`。
+- 当前已打通的 NFS 链路为：虚拟机 `192.168.137.3` -> 开发板 `192.168.137.106`。
 - 虚拟机实际导出目录为 `/home/lan/linux/nfs`，不是 `/home/lan/linux`。
 - 开发板挂载点为 `/mnt/nfs`。
 - 开发板验证通过的挂载命令为 `mount -t nfs -o vers=3,nolock,proto=tcp 192.168.137.3:/home/lan/linux/nfs /mnt/nfs`。
