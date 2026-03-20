@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 
 const mqttMock = vi.hoisted(() => {
@@ -30,6 +30,11 @@ vi.mock('mqtt', () => ({
 
 import App from '../App.vue'
 
+async function flushView() {
+  await Promise.resolve()
+  await Promise.resolve()
+}
+
 describe('App', () => {
   beforeEach(() => {
     mqttMock.handlers.clear()
@@ -47,12 +52,6 @@ describe('App', () => {
                   dataSource: 'seed',
                   updatedAt: '2026-03-19T20:00:00',
                   env: { temperature: 25, humidity: 60, soil: 35, light: 1400, co2: 360 },
-                  decision: {
-                    fan: 'OFF',
-                    pump: 'ON',
-                    led: 'OFF',
-                    summary: '土壤偏干，建议启动灌溉',
-                  },
                   vision: { brightness: 120, greenRatio: 0.02, motionFlag: false, visionOk: true },
                   presence: {
                     sensor1: 'ONLINE',
@@ -111,31 +110,29 @@ describe('App', () => {
     )
   })
 
-  it('renders greenhouse dashboard', async () => {
+  it('renders the command center hero and realtime metric cards', async () => {
     const wrapper = mount(App)
-    await Promise.resolve()
-    await Promise.resolve()
+    await flushView()
 
-    expect(wrapper.text()).toContain('智慧农业大棚监控舱')
-    expect(wrapper.text()).toContain('实时环境主读数')
+    expect(wrapper.text()).toContain('智慧农业大棚监控中心')
+    expect(wrapper.text()).toContain('实时环境核心指标')
+    expect(wrapper.findAll('.metric-card')).toHaveLength(6)
   })
 
   it('shows mqtt panel and opens config dialog', async () => {
     const wrapper = mount(App)
-    await Promise.resolve()
-    await Promise.resolve()
+    await flushView()
 
-    expect(wrapper.text()).toContain('MQTT 连接')
+    expect(wrapper.text()).toContain('通信链路监控')
     expect(wrapper.text()).toContain('连接日志')
+    expect(wrapper.text()).toContain('设备在线状态')
 
-    const editButton = wrapper
-      .findAll('button')
-      .find((button) => button.text().includes('编辑配置'))
+    const editButton = wrapper.findAll('button').find((button) => button.text().includes('编辑 MQTT 配置'))
 
     expect(editButton).toBeTruthy()
 
     await editButton!.trigger('click')
-    await Promise.resolve()
+    await flushView()
 
     expect(wrapper.text()).toContain('MQTT 连接配置')
     expect(wrapper.text()).toContain('Client ID')
@@ -144,8 +141,7 @@ describe('App', () => {
 
   it('does not show derived summary or control suggestions', async () => {
     const wrapper = mount(App)
-    await Promise.resolve()
-    await Promise.resolve()
+    await flushView()
 
     expect(wrapper.text()).not.toContain('当前运行判断')
     expect(wrapper.text()).not.toContain('本地控制建议')
@@ -154,8 +150,7 @@ describe('App', () => {
 
   it('renders latest mqtt message card below the log card', async () => {
     const wrapper = mount(App)
-    await Promise.resolve()
-    await Promise.resolve()
+    await flushView()
 
     const mqttPanel = wrapper.find('.mqtt-panel')
     const cardTitles = mqttPanel.findAll('.subpanel-header span').map((node) => node.text())
@@ -172,16 +167,14 @@ describe('App', () => {
 
   it('shows arrival timestamp after receiving mqtt message', async () => {
     const wrapper = mount(App)
-    await Promise.resolve()
-    await Promise.resolve()
+    await flushView()
 
     const messageCard = wrapper.find('.mqtt-message-card')
     expect(messageCard.text()).toContain('尚未收到消息')
 
-    const vm = wrapper.vm as any
+    const vm = wrapper.vm as { handleIncomingMessage: (topic: string, payload: Uint8Array) => void }
     vm.handleIncomingMessage('smart-greenhouse/node1/state', new TextEncoder().encode('{"node_id":1}'))
-    await Promise.resolve()
-    await Promise.resolve()
+    await flushView()
 
     const updatedCard = wrapper.find('.mqtt-message-card')
     const text = updatedCard.text()
