@@ -51,6 +51,8 @@
 #define configUSE_TRACE_FACILITY	0
 #define configUSE_16_BIT_TICKS		0
 #define configIDLE_SHOULD_YIELD		1
+#define configUSE_TICKLESS_IDLE      1
+#define configEXPECTED_IDLE_TIME_BEFORE_SLEEP 2
 #define configUSE_MUTEXES            1
 #define configCHECK_FOR_STACK_OVERFLOW 2
 #define configUSE_MALLOC_FAILED_HOOK  1
@@ -85,6 +87,12 @@ NVIC value of 255. */
 #define xPortPendSVHandler  PendSV_Handler
 #define vPortSVCHandler     SVC_Handler
 #define INCLUDE_xTaskGetSchedulerState   1
+
+void PRE_SLEEP_PROCESSING(uint32_t ulExpectedIdleTime);
+void POST_SLEEP_PROCESSING(uint32_t ulExpectedIdleTime);
+
+#define configPRE_SLEEP_PROCESSING(x) PRE_SLEEP_PROCESSING(x)
+#define configPOST_SLEEP_PROCESSING(x) POST_SLEEP_PROCESSING(x)
 
 
 #endif /* FREERTOS_CONFIG_H */
