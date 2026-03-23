@@ -212,6 +212,7 @@ Output/
 out/
 dist/
 build_test_*.exe
+digital-screen/
 
 # --------------------
 # 固件二进制文件（可选，根据需要保留或删除）
