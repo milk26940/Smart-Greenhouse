@@ -213,12 +213,15 @@ const environmentCards = computed(() => {
   ]
 })
 
-const visionEntries = computed(() => [
-  { label: '视觉状态', value: realtime.value?.vision.visionOk ? '正常' : '异常', tone: realtime.value?.vision.visionOk ? 'ok' : 'danger' },
-  { label: '运动检测', value: realtime.value?.vision.motionFlag ? '检测到运动' : '无明显运动', tone: realtime.value?.vision.motionFlag ? 'warning' : 'neutral' },
-  { label: '绿植比例', value: formatNumber(realtime.value?.vision.greenRatio, 3), tone: 'ok' },
-  { label: '画面摘要', value: realtime.value?.summary || '等待实时数据', tone: 'neutral' },
-])
+const visionEntries = computed(() => {
+  const isOk = realtime.value?.vision?.visionOk ?? false
+  return [
+    { label: '视觉状态', value: isOk ? '正常' : '异常', tone: isOk ? 'ok' : 'danger' },
+    { label: '运动检测', value: realtime.value?.vision?.motionFlag ? '检测到运动' : '无明显运动', tone: realtime.value?.vision?.motionFlag ? 'warning' : 'neutral' },
+    { label: '绿植比例', value: formatNumber(realtime.value?.vision?.greenRatio, 3), tone: 'ok' },
+    { label: '画面摘要', value: realtime.value?.summary || '等待实时数据', tone: 'neutral' },
+  ]
+})
 
 const statsCards = computed(() => {
   if (!stats.value) {
