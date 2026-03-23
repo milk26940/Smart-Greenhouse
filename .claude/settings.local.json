@@ -10,7 +10,12 @@
       "Bash(npm run:*)",
       "Bash(node:*)",
       "Bash(./mvnw package:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "WebSearch",
+      "mcp__exa__web_search_exa",
+      "Bash(npm install:*)",
+      "Bash(smithery:*)",
+      "Bash(npx:*)"
     ]
   }
 }

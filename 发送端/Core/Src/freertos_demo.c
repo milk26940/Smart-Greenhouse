@@ -131,6 +131,20 @@ static void lora_task(void *argument)
   }
 }
 
+void PRE_SLEEP_PROCESSING(uint32_t ulExpectedIdleTime)
+{
+  (void)ulExpectedIdleTime;
+  __DSB();
+  __ISB();
+}
+
+void POST_SLEEP_PROCESSING(uint32_t ulExpectedIdleTime)
+{
+  (void)ulExpectedIdleTime;
+  __DSB();
+  __ISB();
+}
+
 void freertos_start(void)
 {
   sensor_mutex = xSemaphoreCreateMutex();
