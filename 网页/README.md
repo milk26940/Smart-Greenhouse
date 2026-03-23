@@ -47,6 +47,7 @@ cd D:\STM32Project\智慧农业大棚\网页\demo
 
 ```powershell
 cd D:\STM32Project\智慧农业大棚\网页\vue-project
+npm install
 npm run dev
 ```
 
