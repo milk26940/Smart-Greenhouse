@@ -15,7 +15,8 @@
       "mcp__exa__web_search_exa",
       "Bash(npm install:*)",
       "Bash(smithery:*)",
-      "Bash(npx:*)"
+      "Bash(npx:*)",
+      "Bash(python fix_conflict.py)"
     ]
   }
 }
